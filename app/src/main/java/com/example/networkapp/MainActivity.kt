@@ -1,5 +1,6 @@
 package com.example.networkapp
 
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -14,9 +15,15 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
+import java.io.File
 
 // TODO (1: Fix any bugs)
 // TODO (2: Add function saveComic(...) to save and load comic info automatically when app starts)
+
+private const val AUTO_SAVE_KEY = "auto_save"
+private const val COMIC_PREFERENCES = "comic_preferences"
+private const val COMIC_TITLE_KEY = "title"
+private const val COMIC_DESCRIPTION_KEY = "description"
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +33,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var numberEditText: EditText
     lateinit var showButton: Button
     lateinit var comicImageView: ImageView
+
+    private lateinit var preferences: SharedPreferences
+    private var autoSave = false
+    private lateinit var file: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +50,15 @@ class MainActivity : AppCompatActivity() {
         showButton = findViewById(R.id.showComicButton)
         comicImageView = findViewById(R.id.comicImageView)
 
+        preferences = getSharedPreferences(COMIC_PREFERENCES, MODE_PRIVATE)
+        autoSave = preferences.getBoolean(AUTO_SAVE_KEY, false)
+
         showButton.setOnClickListener {
             downloadComic(numberEditText.text.toString())
+        }
+
+        if (autoSave) {
+            loadComic()
         }
 
     }
@@ -57,7 +75,21 @@ class MainActivity : AppCompatActivity() {
         titleTextView.text = comicObject.getString("title")
         descriptionTextView.text = comicObject.getString("alt")
         Picasso.get().load(comicObject.getString("img")).into(comicImageView)
+
+        if (autoSave) {
+            saveComic(comicObject)
+        }
     }
 
+    private fun saveComic(comicObject: JSONObject) {
+        val editor = preferences.edit()
+        editor.putString(COMIC_TITLE_KEY, comicObject.getString("title"))
+        editor.putString(COMIC_DESCRIPTION_KEY, comicObject.getString("alt"))
+        editor.apply()
+    }
 
+    private fun loadComic() {
+        titleTextView.text = preferences.getString(COMIC_TITLE_KEY, "")
+        descriptionTextView.text = preferences.getString(COMIC_DESCRIPTION_KEY, "")
+    }
 }
