@@ -33,11 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         requestQueue = Volley.newRequestQueue(this)
 
-        titleTextView = findViewById<TextView>(R.id.comicTitleTextView)
-        descriptionTextView = findViewById<TextView>(R.id.comicDescriptionTextView)
-        numberEditText = findViewById<EditText>(R.id.comicNumberEditText)
-        showButton = findViewById<Button>(R.id.showComicButton)
-        comicImageView = findViewById<ImageView>(R.id.comicImageView)
+        titleTextView = findViewById(R.id.comicTitleTextView)
+        descriptionTextView = findViewById(R.id.comicDescriptionTextView)
+        numberEditText = findViewById(R.id.comicNumberEditText)
+        showButton = findViewById(R.id.showComicButton)
+        comicImageView = findViewById(R.id.comicImageView)
 
         showButton.setOnClickListener {
             downloadComic(numberEditText.text.toString())
